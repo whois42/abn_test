@@ -1,50 +1,37 @@
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
-import { searchShows } from "../modules/api/shows";
-import type { Show } from "../modules/types/show.types";
+import { ref, watch, computed, onUnmounted } from "vue";
+import { useSearchShows } from "../modules/composables/shows";
 
 import ShowCard from "../components/show/ShowCard.vue";
 
-const DEBOUNCE_TIME = 800;
+const DEBOUNCE_TIME = 500;
 
+let timeout: ReturnType<typeof setTimeout> | undefined;
 const query = ref("");
-const results = ref<Show[]>([]);
-const loading = ref(false);
-const error = ref<string | null>(null);
+const debouncedQuery = ref("");
+
+const { data, isError, isPending, isFetching, error } =
+  useSearchShows(debouncedQuery);
 
 const emptyStateText = computed(() => {
-  if (loading.value) {
-    return "Searching...";
-  } else if (error.value) {
-    return error.value;
-  } else if (query.value && !results.value.length) {
-    return "No results found";
-  }
+  if (!query.value) return "";
+  if (isPending.value || isFetching.value) return "Searching...";
+  if (isError.value) return error.value?.message ?? "Something went wrong";
+  if (data.value?.length === 0) return "No results found";
   return "";
 });
 
-let timeout: number | null = null;
+watch(query, (newValue) => {
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    console.log(newValue);
 
-watch(query, (newQuery) => {
-  if (timeout) clearTimeout(timeout);
-
-  timeout = setTimeout(async () => {
-    if (!newQuery.trim()) {
-      results.value = [];
-      return;
-    }
-
-    loading.value = true;
-    error.value = null;
-
-    try {
-      results.value = await searchShows(newQuery);
-    } catch (e: any) {
-      error.value = e.message;
-    } finally {
-      loading.value = false;
-    }
+    debouncedQuery.value = newValue;
   }, DEBOUNCE_TIME);
+});
+
+onUnmounted(() => {
+  clearTimeout(timeout);
 });
 </script>
 
@@ -53,16 +40,19 @@ watch(query, (newQuery) => {
     <div class="search_page__input_wrapper">
       <input
         v-model="query"
+        type="search"
         placeholder="Search TV shows..."
+        autocomplete="off"
+        aria-label="Search TV shows"
         class="search_page__input"
       />
     </div>
 
-    <div v-if="query && results.length" class="search_page__results">
-      <ShowCard v-for="show in results" :key="show.id" :show="show" />
+    <div v-if="query && data && data.length" class="search_page__results">
+      <ShowCard v-for="show in data" :key="show.id" :show="show" />
     </div>
 
-    <div v-else class="search_page__state">
+    <div v-else-if="emptyStateText" class="search_page__state">
       {{ emptyStateText }}
     </div>
   </div>
@@ -72,17 +62,6 @@ watch(query, (newQuery) => {
 .search_page {
   min-height: 100%;
   padding: 2rem 2.5rem;
-}
-
-.search_page__hero {
-  margin-bottom: 40px;
-}
-
-.search_page__title {
-  font-size: 56px;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 24px;
 }
 
 .search_page__input_wrapper {
@@ -111,19 +90,13 @@ watch(query, (newQuery) => {
 
 .search_page__results {
   display: grid;
-
   grid-template-columns: repeat(auto-fill, minmax(11.25rem, 1fr));
-
   gap: 24px;
 }
 
 @media (max-width: 768px) {
   .search_page {
     padding: 1.5rem 1rem;
-  }
-
-  .search_page__title {
-    font-size: 2rem;
   }
 
   .search_page__input_wrapper {

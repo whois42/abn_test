@@ -12,6 +12,7 @@
     "format": "prettier .  --write"
   },
   "dependencies": {
+    "@tanstack/vue-query": "^5.100.9",
     "@types/dompurify": "^3.0.5",
     "dompurify": "^3.4.2",
     "vue": "^3.5.32",

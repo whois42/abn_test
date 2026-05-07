@@ -19,8 +19,9 @@ export async function fetchShowById(id: number): Promise<Show> {
 }
 
 export async function searchShows(query: string): Promise<Show[]> {
-  if (!query.trim()) return [];
-
+  if (!query.trim()) {
+    return [];
+  }
   const data = await get<TVMazeSearchResponse[]>(
     `/search/shows?q=${encodeURIComponent(query)}`,
   );

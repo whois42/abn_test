@@ -1,4 +1,5 @@
 import type { TVMazeShow, Show } from "../modules/types/show.types";
+const RATING_FALLBACK = 0;
 
 export function normalizeShow(show: TVMazeShow): Show {
   return {
@@ -15,27 +16,43 @@ export function normalizeShow(show: TVMazeShow): Show {
   };
 }
 
-export function groupAndSortShows(shows: Show[]): Record<string, Show[]> {
-  const map: Record<string, Show[]> = {};
-
+export function groupShowsByGenre(shows: Show[]): Map<string, Show[]> {
+  const grouped = new Map<string, Show[]>();
+  if (!shows) {
+    return grouped;
+  }
   for (const show of shows) {
-    if (!show.genres || show.genres.length === 0) continue;
+    if (show.genres.length === 0) continue;
+
     for (const genre of show.genres) {
-      if (!map[genre]) {
-        map[genre] = [];
+      const bucket = grouped.get(genre);
+      if (bucket) {
+        bucket.push(show);
+      } else {
+        grouped.set(genre, [show]);
       }
-      map[genre].push(show);
     }
   }
 
-  for (const genre in map) {
-    map[genre] = map[genre].sort((a, b) => {
-      const ratingA = a.rating ?? -1;
-      const ratingB = b.rating ?? -1;
+  return grouped;
+}
 
-      return ratingB - ratingA;
-    });
+export function sortShowsByRating(shows: readonly Show[]): Show[] {
+  return [...shows].sort((a, b) => {
+    const ratingA = a.rating ?? RATING_FALLBACK;
+    const ratingB = b.rating ?? RATING_FALLBACK;
+    return ratingB - ratingA;
+  });
+}
+
+export function groupAndSortShows(shows: Show[]): Map<string, Show[]> {
+  const grouped = groupShowsByGenre(shows);
+  const sorted = new Map<string, Show[]>();
+  const genresInOrder = [...grouped.keys()].sort((a, b) => a.localeCompare(b));
+
+  for (const genre of genresInOrder) {
+    sorted.set(genre, sortShowsByRating(grouped.get(genre)!));
   }
 
-  return map;
+  return sorted;
 }

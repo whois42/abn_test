@@ -1,40 +1,28 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { fetchShowById } from "../modules/api/shows";
 import { sanitizeHtml } from "../utils/helpers";
-import type { Show } from "../modules/types/show.types";
+import { useShow } from "../modules/composables/shows";
 
 const route = useRoute();
+const id = Number(route.params.id);
 
-const show = ref<Show | null>(null);
-const loading = ref(false);
-const error = ref<string | null>(null);
+const { data: show, isPending, isError, error } = useShow(id);
 
 const emptyStateText = computed(() => {
-  if (loading.value) {
+  if (isPending.value) {
     return "Loading...";
   } else if (error.value) {
     return error.value;
   }
   return "";
 });
-
-onMounted(async () => {
-  loading.value = true;
-
-  try {
-    const id = Number(route.params.id);
-    show.value = await fetchShowById(id);
-  } catch (e: any) {
-    error.value = e.message;
-  } finally {
-    loading.value = false;
-  }
-});
 </script>
 
 <template>
+  <div v-if="isPending || isError" class="show_details__state">
+    {{ emptyStateText }}
+  </div>
   <div v-if="show" class="show_details">
     <div class="show_details__main_info">
       <img v-if="show.image" :src="show.image" :alt="show.title" />
@@ -83,9 +71,6 @@ onMounted(async () => {
         <strong>{{ show.runtime ?? "N/A" }} min</strong>
       </div>
     </div>
-  </div>
-  <div v-else class="show_details__state">
-    {{ emptyStateText }}
   </div>
 </template>
 

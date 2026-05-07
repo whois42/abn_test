@@ -9,7 +9,7 @@ import homeIcon from "../../assets/house.svg";
       <img :src="homeIcon" alt="Home" />
       <span>Home</span>
     </router-link>
-    <router-link to="search">
+    <router-link to="/search">
       <img :src="searchIcon" alt="Search" />
       <span>Search</span>
     </router-link>

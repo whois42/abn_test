@@ -1,24 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 
-import { useShows } from "../modules/composables/useShows";
+import { useShows } from "../modules/composables/shows";
 import { groupAndSortShows } from "../utils/shows";
 
 import ShowsRow from "../components/show/ShowsRow.vue";
 
-const { shows, loading, error, fetchAllShows } = useShows();
+const { data, isPending, isError, error } = useShows();
 
-onMounted(() => {
-  fetchAllShows();
+const groupedShows = computed(() => {
+  return groupAndSortShows(data.value ?? []);
 });
 
-const groupedShows = computed(() => groupAndSortShows(shows.value));
 const emptyStateText = computed(() => {
-  if (loading.value) {
-    return "Loading...";
-  } else if (error.value) {
-    return error.value;
-  }
+  if (isPending.value) return "Loading...";
+  if (isError.value) return error.value ?? "Failed to load shows";
   return "";
 });
 </script>
@@ -30,19 +26,18 @@ const emptyStateText = computed(() => {
 
       <p>Discover top rated shows across genres.</p>
     </section>
-
-    <section v-if="shows.length" class="home_page__rows">
+    <div v-if="isPending || isError" class="home_page__state">
+      {{ emptyStateText }}
+    </div>
+    <section v-if="groupedShows" class="home_page__rows">
       <div
-        v-for="(genreShows, genre) in groupedShows"
+        v-for="[genre, genreShows] in groupedShows"
         :key="genre"
         class="home_page__row"
       >
         <ShowsRow :title="genre" :shows="genreShows" />
       </div>
     </section>
-    <div v-else class="home_page__state">
-      {{ emptyStateText }}
-    </div>
   </div>
 </template>
 
