@@ -30,7 +30,7 @@ npm run lint     # run ESLint
 ```
 
 ## Architecture
-
+```
 src/
 ├── components/ # Presentational, reusable UI
 │ ├── common/ # Cross-cutting (AppHeader)
@@ -45,12 +45,14 @@ src/
 ├── tests/ # Unit tests
 ├── router/ # Route definitions
 └── style.css # Global styles and CSS variables
+```
 
 ## Testing
 
 Unit tests cover the pure utility layer (`normalizeShow`, `groupShowsByGenre`, `sortShowsByRating`, `groupAndSortShows`) including edge cases: missing optional fields, multi-genre shows, null ratings, alphabetical genre order, and input-mutation guarantees. The Vue Query layer is intentionally not retested — it's well-covered upstream.
 
-## Trade-offs and what I'd add with more time
+## Trade-offs and decisions
 
-- **Pagination.** TVMaze's `/shows` endpoint is paginated; only page 0 is loaded. A `useInfiniteQuery` would surface the full catalog. However, due to limited design of API endpoint I decided to limit data fetching only by 1st page for this test asessment.
+- **Pagination.** TVMaze's `/shows` endpoint is paginated; only page 0 is loaded. A `useInfiniteQuery` would surface the full catalog. 
 - **Component-level tests.** Page-level integration tests with a mocked `QueryClient` would lock in render behavior.
+- **Filtration.** TVMaze's `/shows` endpoint does not support filters. Due to this limitation creating `Genre` page is ommited.
