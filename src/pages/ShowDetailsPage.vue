@@ -54,9 +54,12 @@ onMounted(async () => {
             {{ genre }}
           </span>
         </div>
-        <div class="show_details__summary">
-          {{ sanitizeHtml(show.summary) }}
-        </div>
+        <div
+          v-if="show.summary"
+          class="show_details__summary"
+          v-html="sanitizeHtml(show.summary)"
+        />
+        <div v-else class="show_details__summary">No summary available.</div>
       </div>
     </div>
     <div class="show_details__meta">

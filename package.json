@@ -12,6 +12,8 @@
     "format": "prettier .  --write"
   },
   "dependencies": {
+    "@types/dompurify": "^3.0.5",
+    "dompurify": "^3.4.2",
     "vue": "^3.5.32",
     "vue-router": "^5.0.6"
   },
