@@ -13,9 +13,9 @@ export function useShows() {
 
     try {
       const results = await fetchShows();
-      shows.value = results.flat();
-    } catch (err: any) {
-      error.value = err.message || "Failed to fetch shows";
+      shows.value = results;
+    } catch (err: unknown) {
+      error.value = (err as Error).message || "Failed to fetch shows";
     } finally {
       loading.value = false;
     }

@@ -5,14 +5,14 @@ import homeIcon from "../../assets/house.svg";
 
 <template>
   <header class="app_header">
-    <a href="/">
+    <router-link to="/">
       <img :src="homeIcon" alt="Home" />
       <span>Home</span>
-    </a>
-    <a href="search">
+    </router-link>
+    <router-link to="search">
       <img :src="searchIcon" alt="Search" />
       <span>Search</span>
-    </a>
+    </router-link>
   </header>
 </template>
 

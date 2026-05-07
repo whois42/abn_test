@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useShows } from "../modules/composables/useShows";
 import * as showsApi from "../modules/api/shows";
 
-vi.mock("@/modules/api/shows");
+vi.mock("../modules/api/shows");
 
 describe("useShows", () => {
   beforeEach(() => {
