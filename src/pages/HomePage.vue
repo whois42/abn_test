@@ -14,7 +14,7 @@ const groupedShows = computed(() => {
 
 const emptyStateText = computed(() => {
   if (isPending.value) return "Loading...";
-  if (isError.value) return error.value ?? "Failed to load shows";
+  if (isError.value) return error.value?.message ?? "Failed to load shows";
   return "";
 });
 </script>

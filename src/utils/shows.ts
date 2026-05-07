@@ -1,5 +1,5 @@
 import type { TVMazeShow, Show } from "../modules/types/show.types";
-const RATING_FALLBACK = 0;
+const RATING_FALLBACK = Number.NEGATIVE_INFINITY;
 
 export function normalizeShow(show: TVMazeShow): Show {
   return {

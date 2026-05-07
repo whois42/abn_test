@@ -6,10 +6,12 @@ import { useRouter } from "vue-router";
 
 const DEBOUNCE_TIME = 500;
 
-let timeout: ReturnType<typeof setTimeout> | undefined;
-const query = ref("");
-const debouncedQuery = ref("");
 const router = useRouter();
+
+let timeout: ReturnType<typeof setTimeout> | undefined;
+const queryFromUrl = new URLSearchParams(window.location.search).get("search") 
+const query = ref(queryFromUrl ?? "");
+const debouncedQuery = ref("");
 
 const { data, isError, isPending, isFetching, error } =
   useSearchShows(debouncedQuery);
@@ -25,8 +27,6 @@ const emptyStateText = computed(() => {
 watch(query, (newValue) => {
   clearTimeout(timeout);
   timeout = setTimeout(() => {
-    console.log(newValue);
-
     debouncedQuery.value = newValue;
     router.push({ query: { search: newValue } });
   }, DEBOUNCE_TIME);

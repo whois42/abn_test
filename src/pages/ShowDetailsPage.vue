@@ -14,7 +14,7 @@ const emptyStateText = computed(() => {
   if (isPending.value) {
     return "Loading...";
   } else if (error.value) {
-    return error.value;
+    return error.value.message;
   }
   return "";
 });
