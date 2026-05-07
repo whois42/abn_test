@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
 import type { Show } from "../../modules/types/show.types";
 
-const props = defineProps<{ show: Show }>();
-const router = useRouter();
-
-function goToDetails() {
-  router.push(`/details/${props.show.id}`);
-}
+defineProps<{ show: Show }>();
 </script>
 <template>
-  <div class="show_card" @click="goToDetails">
+  <router-link :to="`/details/${show.id}`" class="show_card">
     <div class="show_card__image_wrapper">
       <img v-if="show.image" :src="show.image" :alt="show.title" />
       <div v-else class="show_card__image_placeholder">No Image</div>
@@ -24,7 +18,7 @@ function goToDetails() {
         {{ show.rating ?? "N/A" }}
       </p>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <style scoped>
@@ -32,6 +26,8 @@ function goToDetails() {
   width: 140px;
   flex-shrink: 0;
   cursor: pointer;
+  text-decoration: none;
+  color: var(--text-h);
 }
 
 .show_card__image_wrapper {

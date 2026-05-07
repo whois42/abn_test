@@ -2,15 +2,11 @@
 import { ref, watch, computed, onUnmounted } from "vue";
 import { useSearchShows } from "../modules/composables/shows";
 import ShowCard from "../components/show/ShowCard.vue";
-import { useRouter } from "vue-router";
 
 const DEBOUNCE_TIME = 500;
-
-const router = useRouter();
-
 let timeout: ReturnType<typeof setTimeout> | undefined;
-const queryFromUrl = new URLSearchParams(window.location.search).get("search") 
-const query = ref(queryFromUrl ?? "");
+const query = ref("");
+
 const debouncedQuery = ref("");
 
 const { data, isError, isPending, isFetching, error } =
@@ -28,7 +24,6 @@ watch(query, (newValue) => {
   clearTimeout(timeout);
   timeout = setTimeout(() => {
     debouncedQuery.value = newValue;
-    router.push({ query: { search: newValue } });
   }, DEBOUNCE_TIME);
 });
 
