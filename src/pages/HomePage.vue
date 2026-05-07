@@ -9,7 +9,8 @@ import ShowsRow from "../components/show/ShowsRow.vue";
 const { data, isPending, isError, error } = useShows();
 
 const groupedShows = computed(() => {
-  return groupAndSortShows(data.value ?? []);
+  const shows = data.value?.pages.flat() ?? [];
+  return groupAndSortShows(shows ?? []);
 });
 
 const emptyStateText = computed(() => {

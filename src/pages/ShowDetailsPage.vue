@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { sanitizeHtml } from "../utils/helpers";
 import { useShow } from "../modules/composables/shows";
 import starIcon from "../assets/star.svg";
 
 const route = useRoute();
-const id = Number(route.params.id);
+const id = ref(Number(route.params.id));
 
 const { data: show, isPending, isError, error } = useShow(id);
 
