@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { sanitizeHtml } from "../utils/helpers";
 import { useShow } from "../modules/composables/shows";
+import starIcon from "../assets/star.svg";
 
 const route = useRoute();
 const id = Number(route.params.id);
@@ -17,6 +18,14 @@ const emptyStateText = computed(() => {
   }
   return "";
 });
+
+const formattedDate = computed(() => {
+  if (show.value?.premiered) {
+    const premiereDay = new Date(show.value?.premiered);
+    return new Intl.DateTimeFormat().format(premiereDay);
+  }
+  return "N/A";
+});
 </script>
 
 <template>
@@ -30,17 +39,14 @@ const emptyStateText = computed(() => {
         <h1>{{ show.title }}</h1>
         <div class="show_details__top_meta">
           <div class="show_details__rating">
+            <img :src="starIcon" alt="Rating" />
             <span>{{ show.rating ?? "N/A" }}/10</span>
           </div>
-          <span>
-            {{ show.premiered ?? "Unknown year" }}
-          </span>
-          <span> {{ show.runtime ?? "N/A" }} min </span>
-        </div>
-        <div class="show_details__genres">
-          <span v-for="genre in show.genres" :key="genre">
-            {{ genre }}
-          </span>
+          <div class="show_details__genres">
+            <span v-for="genre in show.genres" :key="genre">
+              {{ genre }}
+            </span>
+          </div>
         </div>
         <div
           v-if="show.summary"
@@ -63,7 +69,7 @@ const emptyStateText = computed(() => {
 
       <div class="show_details__meta_item">
         <span>Premiered</span>
-        <strong>{{ show.premiered ?? "N/A" }}</strong>
+        <strong>{{ formattedDate }}</strong>
       </div>
 
       <div class="show_details__meta_item">
@@ -126,6 +132,10 @@ const emptyStateText = computed(() => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.show_details__rating img {
+  width: 1rem;
 }
 
 .show_details__genres {

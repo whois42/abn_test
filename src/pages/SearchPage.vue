@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref, watch, computed, onUnmounted } from "vue";
 import { useSearchShows } from "../modules/composables/shows";
-
 import ShowCard from "../components/show/ShowCard.vue";
+import { useRouter } from "vue-router";
 
 const DEBOUNCE_TIME = 500;
 
 let timeout: ReturnType<typeof setTimeout> | undefined;
 const query = ref("");
 const debouncedQuery = ref("");
+const router = useRouter();
 
 const { data, isError, isPending, isFetching, error } =
   useSearchShows(debouncedQuery);
@@ -27,6 +28,7 @@ watch(query, (newValue) => {
     console.log(newValue);
 
     debouncedQuery.value = newValue;
+    router.push({ query: { search: newValue } });
   }, DEBOUNCE_TIME);
 });
 
